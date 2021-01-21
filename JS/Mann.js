@@ -16,16 +16,27 @@ class Man{
     "Images/Running Man/BreakDown/6.png","Images/Running Man/BreakDown/7.png","Images/Running Man/BreakDown/8.png",
     "Images/Running Man/BreakDown/9.png","Images/Running Man/BreakDown/10.png","Images/Running Man/BreakDown/11.png",
     "Images/Running Man/BreakDown/12.png","Images/Running Man/BreakDown/13.png")
-    //this.man.addAnimation("Runn",this.ani)
+    this.man.addAnimation("Runn",this.ani)
+    this.man.scale=0.3
     this.colour=color(random(1,255),random(1,255),random(1,255))
     World.add(world, this.body);
   }
   display(){
     var pos = this.body.position
+    var angle = this.body.angle
     this.man.x=pos.x
     this.man.y=pos.y
+    this.man.rotation=angle*(180/PI)
+    // 180 degrees = PI
+    // 
+
+    push();
+    angleMode(RADIANS)
+    translate(pos.x,pos.y)
+    rotate(angle)
     rectMode(CENTER)
-    //rect(pos.x,pos.y,this.width,this.height)
+    rect(0,0,this.width,this.height)
+    pop();
   }
 }
 
