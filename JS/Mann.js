@@ -17,8 +17,10 @@ class Man{
     "Images/Running Man/BreakDown/9.png","Images/Running Man/BreakDown/10.png","Images/Running Man/BreakDown/11.png",
     "Images/Running Man/BreakDown/12.png","Images/Running Man/BreakDown/13.png")
     this.man.addAnimation("Runn",this.ani)
-    this.man.scale=0.3
+    this.man.setCollider("rectangle",0,0,width/0.2,height/0.2)
+    this.man.scale=0.2
     this.colour=color(random(1,255),random(1,255),random(1,255))
+    this.man.debug=true
     World.add(world, this.body);
   }
   display(){
@@ -28,7 +30,12 @@ class Man{
     this.man.y=pos.y
     this.man.rotation=angle*(180/PI)
     // 180 degrees = PI
-    // 
+
+    if(this.man.isTouching(platsGroup)||this.man.isTouching(trampsGroup)){
+      this.man.play()
+    }else{
+      this.man.pause()
+    }
 
     push();
     angleMode(RADIANS)
