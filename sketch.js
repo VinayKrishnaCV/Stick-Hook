@@ -1,6 +1,8 @@
-// So when we make dots - display circle image at the points .. and just modify our sling to connect to two bodies
-// spawn random points, attach the man to nearest point.
-//when finish line is crossed, display message and reload window.
+// adding sounds
+// make the end state better - press R to play new level,
+// add a background 
+// home state - to explain the gameplay 
+// hearts/ counter for fails
 const Engine = Matter.Engine
 const World = Matter.World
 const Bodies = Matter.Bodies
@@ -11,7 +13,7 @@ var manStick
 var finnish
 var Howek=null
 var check=1
-var trampsGroup
+var trampsGroup,crc=[]
 
 function preload() {
   finnish=loadImage("Images/Finnish Line.png")
@@ -31,26 +33,26 @@ function setup() {
   var x=0
   var y=0
   var w=0
+  var rand=0
   while(x<3000){
+    rand=random(400,700)
     y=random(400,750)
     w=random(200,400)
     platforms.push(new Plat(x,y,w,100))
-    x+=random(400,700)
+    if(rand>600){
+      crc.push(createSprite(x+rand/2,50,10,10))
+    }else if(rand<=600 && rand>500){
+      tramp=new Trampo(x,y-50,80,30)
+    }
+    x+=rand
+  }
+  for(var i in crc){
+    crc[i].addImage(ci)
+    crc[i].scale=0.1
   }
   console.log(platsGroup)
   manStick=new Man(0,10,30,60)
-  var rondam = Math.round(random(1,3))
-  console.log(rondam)
-  var ypos = platforms[rondam].body.position.y - platforms[rondam].height/2
-  tramp=new Trampo(platforms[rondam].body.position.x,ypos,80,30)
-
-  var rodman = Math.round(random(rondam+2,platforms.length))
-  console.log(rodman)
-  var ypos = platforms[rodman].body.position.y - platforms[rodman].height/2
-  tramp=new Trampo(platforms[rodman].body.position.x,ypos,80,30)
-
-  //platforms.length -- 6,7 .. first tramp generate random(2,4) - r .. second(r+2,platfroms.length)
-
+    
 }
 
 function draw() {
@@ -60,6 +62,7 @@ function draw() {
     platforms[l].display()
   }
   camera.x=manStick.body.position.x
+  camera.y=manStick.body.position.y
   if(keyDown(RIGHT_ARROW)){
     manStick.man.mirrorX(1)
     check=1
@@ -70,26 +73,36 @@ function draw() {
     manStick.man.mirrorX(-1)
     Matter.Body.translate(manStick.body,{x:-5,y:0})
   }
-  if(keyWentUp(UP_ARROW)&&manStick.man.isTouching(platsGroup)){
+  if(keyWentDown(UP_ARROW)&&manStick.man.isTouching(platsGroup)){
     Matter.Body.applyForce(manStick.body, manStick.body.position, {
       x: 0,
-      y: -50
+      y: -100
       });
   }
   image(finnish,3200,0,60,800)
-  //image(ci,3200,0,60,800)
+  if(manStick.body.position.x>3230){
+    textSize(100)
+    stroke("purple")
+    text("You Win 😄",200,400)
+    camera.x=windowWidth/2
+    camera.y=400
+    manStick.man.destroy()
+    World.remove(world,manStick.body)
+  }
   manStick.display()
   tramp.display()
   if (Howek!==null){
     Howek.display()
   }
   if(manStick.body.position.y>800){
+    Matter.Body.setAngle(manStick.body,0)
+    Matter.Body.setAngularVelocity(manStick.body,0)
     Matter.Body.setPosition(manStick.body,{x:0,y:0})
   }
   drawSprites();
   if(manStick.man.isTouching(trampsGroup)){
     Matter.Body.applyForce(manStick.body, manStick.body.position, {
-      x: 0,
+      x: 50,
       y: -100
       });
   }
@@ -97,13 +110,13 @@ function draw() {
 function keyPressed(){
   if (keyCode===32){
     if(Howek=== null){
-      var Posx
-      if(check===1){
-        Posx=manStick.body.position.x+300
-      }else if(check===-1){
-        Posx=manStick.body.position.x-300
+      //man at x pos .. for loop ... crc[i].x - man.x < 300 ... then shoot the hook
+      for(var i in crc){
+      console.log(crc[i].x - manStick.body.position.x)
+        if(crc[i].x - manStick.body.position.x < 400){
+          Howek=new Ho0k(manStick.body,{x:crc[i].x,y:50})
+        }
       }
-      Howek=new Ho0k(manStick.body,{x:Posx,y:0})
       //min(5,3) .. return 3 to you
       //3 circle points .. 
       Howek.shoot()
